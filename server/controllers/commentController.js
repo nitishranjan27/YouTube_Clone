@@ -27,7 +27,7 @@ export const getComments = async (req, res) => {
   const { videoId } = req.params;
 
   try {
-    const comments = await Comment.find({ videoId }).populate('userId', 'username avatar');
+    const comments = await Comment.find({ videoId }).populate('userId', 'username profileImage');
     res.json(comments);
   } catch (err) {
     res.status(500).json({ msg: 'Error fetching comments', error: err.message });

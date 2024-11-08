@@ -1,12 +1,15 @@
 import User from '../models/User.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import dotenv from "dotenv";
+
+dotenv.config();
 
 export const register = async (req, res) => {
     const { username, email, password } = req.body;
     try {
         const hashedPassword = await bcrypt.hash(password, 10);
-        const newUser = new User({ username, email, password: hashedPassword });
+        const newUser = new User({ username, email, password: hashedPassword , profileImage : `https://api.dicebear.com/5.x/initials/svg?seed=${username}` });
         await newUser.save();
         res.status(201).json({ message: 'User registered successfully' });
     } catch (error) {
@@ -24,7 +27,7 @@ export const login = async (req, res) => {
         if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
 
         const token = jwt.sign({ id: user._id }, process.env.Jwt_secret_key, { expiresIn: '1h' });
-        res.json({ token, user: { id: user._id, username: user.username } });
+        res.json({ token, user: { id: user._id, username: user.username , profileImage : user.profileImage} });
     } catch (error) {
         res.status(500).json({ message: 'Error logging in' });
     }
